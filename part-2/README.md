@@ -62,8 +62,8 @@ flash('Student added!', 'success')  # Show message once
 ```
 
 ## Exercise
-1. Add a "Search" feature to faddingind students by name
-2. Add validation to check if email already exists before 
+1. Add a "Search" feature to find students by name
+2. Add validation to check if email already exists before adding
 
 ## Next Step
 → Go to **part-3** to learn Flask-SQLAlchemy ORM (cleaner database code!)
