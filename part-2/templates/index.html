@@ -34,7 +34,11 @@
     {% endwith %}
 
     <a href="{{ url_for('add_student') }}" class="btn btn-add">+ Add New Student</a>
-
+    <form method="get" action="{{ url_for('index') }}" >
+        <input type="text" name="search" placeholder="Search by name" value="{{search}}" style="padding:8px; width:250px;">
+        <button type="submit" class="btn btn-edit">Search</button>
+        <a href="{{ url_for('index') }}" class="btn btn-cancel">Reset</a>
+    </form>
     {% if students %}
         <table>
             <tr>

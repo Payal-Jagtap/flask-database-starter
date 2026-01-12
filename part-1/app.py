@@ -61,15 +61,37 @@ def index():
 
 @app.route('/add')
 def add_sample_student():
-    """Add a sample student to database (for testing)"""
     conn = get_db_connection()
+
     conn.execute(
         'INSERT INTO students (name, email, course) VALUES (?, ?, ?)',
-        ('John Doe', 'john@example.com', 'Python')  # ? are placeholders (safe from SQL injection)
+        ('John Doe', 'john@example.com', 'Python')
     )
-    conn.commit()  # Don't forget to commit!
+
+    conn.execute(
+        'INSERT INTO students (name, email, course) VALUES (?, ?, ?)',
+        ('Bhavesh jagtap', 'bhavesh23@gmail.com', 'PHP')
+    )
+
+    conn.execute(
+        'INSERT INTO students (name, email, course) VALUES (?, ?, ?)',
+        ('kajal jagtap', 'jagtap123@gmail.com', 'Java')
+    )
+
+    conn.execute(
+        'INSERT INTO students (name, email, course) VALUES (?, ?, ?)',
+        ('Pragati Baravkar', 'pragati987@example.com', 'Python')
+    )
+
+    conn.execute(
+        'INSERT INTO students (name, email, course) VALUES (?, ?, ?)',
+        ('karuna Divakar', 'karuna654@gmail.com', 'DBMS')
+    )
+
+    conn.commit()
     conn.close()
-    return 'Student added! <a href="/">Go back to home</a>'
+
+    return 'Students added! <a href="/">Go back to home</a>'
 
 
 if __name__ == '__main__':
