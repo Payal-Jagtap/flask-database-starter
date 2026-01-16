@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Part 3 - Flask-SQLAlchemy ORM</title>
+    <title>Teachers - Part 3</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background: #f0f4f8; }
         h1 { color: #2c3e50; }
@@ -10,7 +10,7 @@
         nav a:hover { text-decoration: underline; }
         table { border-collapse: collapse; width: 100%; background: white; margin-top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #9b59b6; color: white; }
+        th { background-color: #e67e22; color: white; }
         tr:nth-child(even) { background-color: #f2f2f2; }
         .btn { display: inline-block; padding: 8px 16px; text-decoration: none; border-radius: 4px; margin: 2px; }
         .btn-add { background: #27ae60; color: white; padding: 12px 24px; }
@@ -20,16 +20,17 @@
         .flash.success { background: #d4edda; color: #155724; }
         .flash.danger { background: #f8d7da; color: #721c24; }
         .empty { color: #888; font-style: italic; }
-        .course-badge { background: #9b59b6; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .course-badge { background: #e67e22; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .spec-badge { background: #95a5a6; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; margin-left: 5px; }
     </style>
 </head>
 <body>
-    <h1>Student Management (Part 3 - SQLAlchemy ORM)</h1>
+    <h1>Teacher Management</h1>
 
     <nav>
         <a href="{{ url_for('index') }}">Students</a>
-        <a href="{{ url_for('courses') }}">Courses</a>
         <a href="{{ url_for('teachers') }}">Teachers</a>
+        <a href="{{ url_for('courses') }}">Courses</a>
         <a href="{{ url_for('query_examples') }}">Query Examples</a>
     </nav>
 
@@ -41,45 +42,40 @@
         {% endif %}
     {% endwith %}
 
-    <a href="{{ url_for('add_student') }}" class="btn btn-add">+ Add New Student</a>
+    <a href="{{ url_for('add_teacher') }}" class="btn btn-add">+ Add New Teacher</a>
 
-    {% if students %}
+    {% if teachers %}
         <table>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Course</th>
+                <th>Specialization</th>
+                <th>Course Teaching</th>
+                <th>Students in Course</th>
                 <th>Actions</th>
             </tr>
-            {% for student in students %}
+            {% for teacher in teachers %}
             <tr>
-                <td>{{ student.id }}</td>  <!-- ORM uses dot notation! -->
-                <td>{{ student.name }}</td>
-                <td>{{ student.email }}</td>
-                <td><span class="course-badge">{{ student.course.name }}</span>
-                <br>
-                    {% if student.course.teachers %}
-                        {% for teacher in student.course.teachers %}
-                            <span class="teacher-badge"> {{ teacher.name }}</span>
-                        {% endfor %}
-                    {% else %}
-                        <span style="color: #999; font-size: 11px;">No teachers assigned</span>
-                    {% endif %}
-                </td>  <!-- Access related course! -->
+                <td>{{ teacher.id }}</td>
+                <td>{{ teacher.name }}</td>
+                <td>{{ teacher.email }}</td>
+                <td><span class="spec-badge">{{ teacher.specialization or 'N/A' }}</span></td>
+                <td><span class="course-badge">{{ teacher.course.name }}</span></td>
+                <td>{{ teacher.course.students|length }} students</td>
                 <td>
-                    <a href="{{ url_for('edit_student', id=student.id) }}" class="btn btn-edit">Edit</a>
-                    <a href="{{ url_for('delete_student', id=student.id) }}" class="btn btn-delete"
-                       onclick="return confirm('Delete this student?')">Delete</a>
+                    <a href="{{ url_for('edit_teacher', id=teacher.id) }}" class="btn btn-edit">Edit</a>
+                    <a href="{{ url_for('delete_teacher', id=teacher.id) }}" class="btn btn-delete"
+                       onclick="return confirm('Delete this teacher?')">Delete</a>
                 </td>
             </tr>
             {% endfor %}
         </table>
     {% else %}
-        <p class="empty">No students yet. Add one!</p>
+        <p class="empty">No teachers yet. Add one!</p>
     {% endif %}
 
     <hr>
-    <p><strong>Notice:</strong> We use <code>student.course.name</code> to access the related course - that's the power of ORM relationships!</p>
+    <p><strong>Relationship Demo:</strong> <code>teacher.course.name</code> shows the course name, and <code>teacher.course.students</code> shows students enrolled!</p>
 </body>
 </html>

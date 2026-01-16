@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Teacher - Part 3</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f0f4f8; }
+        h1 { color: #2c3e50; }
+        form { background: white; padding: 30px; border-radius: 8px; max-width: 400px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .btn { padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; }
+        .btn-submit { background: #3498db; color: white; }
+        .btn-cancel { background: #ccc; color: #333; margin-left: 10px; }
+        .info { background: #e8f4f8; padding: 10px; border-radius: 4px; margin-bottom: 20px; color: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>Edit Teacher</h1>
+
+    <form method="POST">
+        <div class="info">Editing: {{ teacher.name }} (ID: {{ teacher.id }})</div>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ teacher.name }}" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ teacher.email }}" required>
+
+        <label for="specialization">Specialization:</label>
+        <input type="text" id="specialization" name="specialization" value="{{ teacher.specialization or '' }}">
+
+        <label for="course_id">Course Teaching:</label>
+        <select id="course_id" name="course_id" required>
+            {% for course in courses %}
+                <option value="{{ course.id }}" {% if course.id == teacher.course_id %}selected{% endif %}>
+                    {{ course.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn btn-submit">Update Teacher</button>
+        <a href="{{ url_for('teachers') }}" class="btn btn-cancel">Cancel</a>
+    </form>
+</body>
+</html>

@@ -39,6 +39,7 @@ class Course(db.Model):  # Course table
 
     # Relationship: One Course has Many Students
     students = db.relationship('Student', backref='course', lazy=True)
+    teachers = db.relationship('Teacher', backref='course', lazy=True)
 
     def __repr__(self):  # How to display this object
         return f'<Course {self.name}>'
@@ -55,6 +56,17 @@ class Student(db.Model):  # Student table
     def __repr__(self):
         return f'<Student {self.name}>'
 
+class Teacher(db.Model):  # Teacher table
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    specialization = db.Column(db.String(100))  # Additional field for teachers
+    
+    # Foreign Key: One Teacher teaches one Course
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Teacher {self.name}>'
 
 # =============================================================================
 # ROUTES - Using ORM instead of raw SQL
@@ -123,6 +135,68 @@ def delete_student(id):
     return redirect(url_for('index'))
 
 
+# =============================================================================
+# TEACHER ROUTES - NEW
+# =============================================================================
+
+@app.route('/teachers')
+def teachers():
+    """List all teachers"""
+    all_teachers = Teacher.query.all()
+    return render_template('teachers.html', teachers=all_teachers)
+
+
+@app.route('/add-teacher', methods=['GET', 'POST'])
+def add_teacher():
+    """Add new teacher"""
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        specialization = request.form.get('specialization', '')
+        course_id = request.form['course_id']
+        new_teacher = Teacher(
+            name=name, 
+            email=email, 
+            specialization=specialization,
+            course_id=course_id
+        )
+        db.session.add(new_teacher)
+        db.session.commit()
+
+        flash('Teacher added successfully!', 'success')
+        return redirect(url_for('teachers'))
+
+    courses = Course.query.all()
+    return render_template('add_teacher.html', courses=courses)
+
+@app.route('/edit-teacher/<int:id>', methods=['GET', 'POST'])
+def edit_teacher(id):
+    """Edit teacher"""
+    teacher = Teacher.query.get_or_404(id)
+
+    if request.method == 'POST':
+        teacher.name = request.form['name']
+        teacher.email = request.form['email']
+        teacher.specialization = request.form.get('specialization', '')
+        teacher.course_id = request.form['course_id']
+
+        db.session.commit()
+        flash('Teacher updated!', 'success')
+        return redirect(url_for('teachers'))
+
+    courses = Course.query.all()
+    return render_template('edit_teacher.html', teacher=teacher, courses=courses)
+@app.route('/delete-teacher/<int:id>')
+def delete_teacher(id):
+    teacher = Teacher.query.get_or_404(id)
+    db.session.delete(teacher)
+    db.session.commit()
+
+    flash('Teacher deleted!', 'danger')
+    return redirect(url_for('teachers'))
+
+
+
 @app.route('/add-course', methods=['GET', 'POST'])
 def add_course():
     if request.method == 'POST':
@@ -137,6 +211,48 @@ def add_course():
         return redirect(url_for('courses'))
 
     return render_template('add_course.html')
+
+#=============================================================================
+# ADVANCED QUERY EXAMPLES - EXERCISE 2
+# =============================================================================
+
+@app.route('/query-examples')
+def query_examples():
+    """Demonstrate different query methods"""
+    
+    # Example 1: Filter by course
+    python_course = Course.query.filter_by(name='Python Basics').first()
+    if python_course:
+        python_students = Student.query.filter_by(course_id=python_course.id).all()
+    else:
+        python_students = []
+    
+    # Example 2: Order by name
+    students_ordered = Student.query.order_by(Student.name).all()
+    
+    # Example 3: Limit results
+    first_three_students = Student.query.limit(3).all()
+    
+    # Example 4: Filter with LIKE (case-insensitive search)
+    students_with_a = Student.query.filter(Student.name.like('%a%')).all()
+    
+    # Example 5: Count
+    total_students = Student.query.count()
+    total_teachers = Teacher.query.count()
+    
+    # Example 6: Complex filter (students in courses with 'Python' in name)
+    students_in_python = Student.query.join(Course).filter(
+        Course.name.like('%Python%')
+    ).all()
+    
+    return render_template('query_examples.html', 
+                         python_students=python_students,
+                         students_ordered=students_ordered,
+                         first_three=first_three_students,
+                         students_with_a=students_with_a,
+                         total_students=total_students,
+                         total_teachers=total_teachers,
+                         students_in_python=students_in_python)
 
 
 # =============================================================================
@@ -158,6 +274,35 @@ def init_db():
             db.session.add_all(sample_courses)  # Add multiple at once
             db.session.commit()
             print('Sample courses added!')
+
+        # Add sample teachers if none exist
+        if Teacher.query.count() == 0:
+            courses = Course.query.all()
+            sample_teachers = [
+                Teacher(name='Dr. Sarah Johnson', email='sarah@school.com', 
+                       specialization='Python Programming', course_id=courses[0].id),
+                Teacher(name='Prof. Mike Chen', email='mike@school.com', 
+                       specialization='Full Stack Development', course_id=courses[1].id),
+                Teacher(name='Dr. Emily Brown', email='emily@school.com', 
+                       specialization='Data Analytics', course_id=courses[2].id),
+            ]
+            db.session.add_all(sample_teachers)
+            db.session.commit()
+            print('✓ Sample teachers added!')
+
+        # Add sample students if none exist
+        if Student.query.count() == 0:
+            courses = Course.query.all()
+            sample_students = [
+                Student(name='Alice Smith', email='alice@student.com', course_id=courses[0].id),
+                Student(name='Bob Johnson', email='bob@student.com', course_id=courses[1].id),
+                Student(name='Charlie Davis', email='charlie@student.com', course_id=courses[0].id),
+                Student(name='Diana Wilson', email='diana@student.com', course_id=courses[2].id),
+            ]
+            db.session.add_all(sample_students)
+            db.session.commit()
+            print('✓ Sample students added!')
+
 
 
 if __name__ == '__main__':
@@ -198,7 +343,12 @@ if __name__ == '__main__':
 # EXERCISE:
 # =============================================================================
 #
-# 1. Add a `Teacher` model with a relationship to Course
+# 1. Add a `Teacher` model with a relationship to Course 
+# (have one Course can be taught by many Teachers and one Teacher can only teach only one Course)
+# In other words, create new Teacher model exactly like Student with all others things same 
+# (relationship between the two, frontend page for teacher list, add new teacher, backend routes for add new teacher, edit teacher, delete teacher)
+# Additional exercise - display list of students with course name and teacher name (taken from the course name) and vice versa
+
 # 2. Try different query methods: `filter()`, `order_by()`, `limit()`
 #
 # =============================================================================

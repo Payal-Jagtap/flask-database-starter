@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Query Examples - Part 3</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f0f4f8; }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; margin-top: 30px; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 15px; color: #3498db; text-decoration: none; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .example-box { background: white; padding: 20px; margin: 15px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .code { background: #2c3e50; color: #ecf0f1; padding: 10px; border-radius: 4px; font-family: 'Courier New', monospace; margin: 10px 0; overflow-x: auto; }
+        .result { background: #e8f5e9; padding: 10px; border-left: 4px solid #27ae60; margin: 10px 0; }
+        .result ul { margin: 5px 0; padding-left: 20px; }
+        .stat { display: inline-block; background: #3498db; color: white; padding: 8px 15px; border-radius: 20px; margin: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Query Examples & Demonstrations</h1>
+
+    <nav>
+        <a href="{{ url_for('index') }}">Students</a>
+        <a href="{{ url_for('teachers') }}">Teachers</a>
+        <a href="{{ url_for('courses') }}">Courses</a>
+        <a href="{{ url_for('query_examples') }}">Query Examples</a>
+    </nav>
+
+    <div class="example-box">
+        <h2>📊 Statistics</h2>
+        <span class="stat">Total Students: {{ total_students }}</span>
+        <span class="stat">Total Teachers: {{ total_teachers }}</span>
+    </div>
+
+    <div class="example-box">
+        <h2>1️⃣ Filter by Course (filter_by)</h2>
+        <div class="code">python_course = Course.query.filter_by(name='Python Basics').first()
+python_students = Student.query.filter_by(course_id=python_course.id).all()</div>
+        <div class="result">
+            <strong>Students in Python Basics:</strong>
+            {% if python_students %}
+                <ul>
+                {% for student in python_students %}
+                    <li>{{ student.name }} ({{ student.email }})</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No students found in Python Basics course.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="example-box">
+        <h2>2️⃣ Order By Name (order_by)</h2>
+        <div class="code">students_ordered = Student.query.order_by(Student.name).all()</div>
+        <div class="result">
+            <strong>Students alphabetically:</strong>
+            <ul>
+            {% for student in students_ordered %}
+                <li>{{ student.name }} - {{ student.course.name }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="example-box">
+        <h2>3️⃣ Limit Results (limit)</h2>
+        <div class="code">first_three = Student.query.limit(3).all()</div>
+        <div class="result">
+            <strong>First 3 students:</strong>
+            <ul>
+            {% for student in first_three %}
+                <li>{{ student.name }} - {{ student.email }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="example-box">
+        <h2>4️⃣ LIKE Search (filter with like)</h2>
+        <div class="code">students_with_a = Student.query.filter(Student.name.like('%a%')).all()</div>
+        <div class="result">
+            <strong>Students with 'a' in their name:</strong>
+            {% if students_with_a %}
+                <ul>
+                {% for student in students_with_a %}
+                    <li>{{ student.name }}</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No students found with 'a' in their name.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="example-box">
+        <h2>5️⃣ Join & Complex Filter (join + filter)</h2>
+        <div class="code">students_in_python = Student.query.join(Course).filter(
+    Course.name.like('%Python%')
+).all()</div>
+        <div class="result">
+            <strong>Students in courses with 'Python' in the name:</strong>
+            {% if students_in_python %}
+                <ul>
+                {% for student in students_in_python %}
+                    <li>{{ student.name }} - {{ student.course.name }}</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No students found in Python-related courses.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <hr>
+    <div style="background: #fff3cd; padding: 15px; border-radius: 4px; margin-top: 20px;">
+        <h3>🎓 Additional Query Methods You Can Try:</h3>
+        <ul>
+            <li><code>Model.query.first()</code> - Get first record</li>
+            <li><code>Model.query.get(id)</code> - Get by primary key</li>
+            <li><code>Model.query.filter(Model.field > value)</code> - Comparison filters</li>
+            <li><code>Model.query.order_by(Model.field.desc())</code> - Descending order</li>
+            <li><code>Model.query.offset(10).limit(5)</code> - Pagination</li>
+            <li><code>Model.query.count()</code> - Count records</li>
+        </ul>
+    </div>
+</body>
+</html>
