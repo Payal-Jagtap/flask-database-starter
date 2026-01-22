@@ -1,115 +1,284 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Inventory</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
         }
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 40px;
         }
         h1 {
             color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
             text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .add-btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
+        .top-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            min-width: 300px;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .search-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .clear-btn {
+            padding: 12px 20px;
+            background-color: #6c757d;
             color: white;
             text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        .clear-btn:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        .add-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-block;
         }
         .add-btn:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+        }
+        .stats-card h2 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        .stats-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 20px;
         }
         th {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 12px;
+            padding: 15px;
             text-align: left;
-            border: 1px solid #ddd;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
         }
         td {
-            padding: 12px;
-            border: 1px solid #ddd;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
         }
         tr:hover {
-            background-color: #f0f0f0;
+            background-color: #f8f9ff;
+            transition: background-color 0.2s;
         }
-        .delete-btn {
-            display: inline-block;
-            padding: 8px 12px;
+        .action-links {
+            display: flex;
+            gap: 15px;
+        }
+        .edit-link, .delete-link {
+            padding: 6px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .edit-link {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .edit-link:hover {
+            background-color: #ffb300;
+            transform: translateY(-1px);
+        }
+        .delete-link {
             background-color: #f44336;
             color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
         }
-        .delete-btn:hover {
-            background-color: #da190b;
+        .delete-link:hover {
+            background-color: #d32f2f;
+            transform: translateY(-1px);
         }
         .empty-message {
             text-align: center;
+            padding: 60px 20px;
             color: #666;
-            padding: 20px;
-            font-style: italic;
+            font-size: 1.2em;
+        }
+        .empty-message p {
+            margin-bottom: 20px;
+        }
+        .price-tag {
+            color: #11998e;
+            font-weight: 600;
+        }
+        .quantity-badge {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .search-result-info {
+            background-color: #e8f5e9;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #2e7d32;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Product Inventory</h1>
+        <h1>📦 Product Inventory</h1>
         
-        <a href="/add" class="add-btn">+ Add New Product</a>
+        <!-- Search and Add Button -->
+        <div class="top-controls">
+            <form action="/" method="GET" class="search-box">
+                <input type="text" name="search" placeholder="🔍 Search products by name..." value="{{ search_query }}">
+                <button type="submit" class="search-btn">Search</button>
+                {% if search_query %}
+                <a href="/" class="clear-btn">Clear</a>
+                {% endif %}
+            </form>
+            <a href="/add" class="add-btn">+ Add Product</a>
+        </div>
 
+        <!-- Search Result Info -->
+        {% if search_query %}
+        <div class="search-result-info">
+            <span>🔍 Showing results for: <strong>"{{ search_query }}"</strong></span>
+            <span>Found {{ products|length }} product(s)</span>
+        </div>
+        {% endif %}
+
+        <!-- Total Inventory Value -->
         {% if products %}
+        <div class="stats-card">
+            <h2>💰 Total Inventory Value</h2>
+            <div class="value">${{ "%.2f"|format(total_value) }}</div>
+        </div>
+
+        <!-- Products Table -->
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Name</th>
+                    <th>Product Name</th>
                     <th>Quantity</th>
                     <th>Price</th>
-                    <th>Action</th>
+                    <th>Total Value</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for product in products %}
                 <tr>
-                    <td>{{ product.id }}</td>
+                    <td><strong>#{{ product.id }}</strong></td>
                     <td>{{ product.name }}</td>
-                    <td>{{ product.quantity }}</td>
-                    <td>${{ "%.2f"|format(product.price) }}</td>
+                    <td><span class="quantity-badge">{{ product.quantity }}</span></td>
+                    <td><span class="price-tag">${{ "%.2f"|format(product.price) }}</span></td>
+                    <td><strong>${{ "%.2f"|format(product.quantity * product.price) }}</strong></td>
                     <td>
-                        <a href="/delete/{{ product.id }}" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+                        <div class="action-links">
+                            <a href="/edit/{{ product.id }}" class="edit-link">✏️ Edit</a>
+                            <a href="/delete/{{ product.id }}" class="delete-link" 
+                               onclick="return confirm('Are you sure you want to delete {{ product.name }}?')">
+                               🗑️ Delete
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-        <div class="empty-message">No products in inventory. <a href="/add">Add one now!</a></div>
+        <div class="empty-message">
+            <p>📭 No products found{% if search_query %} matching "{{ search_query }}"{% endif %}.</p>
+            {% if not search_query %}
+            <a href="/add" class="add-btn">Add Your First Product</a>
+            {% else %}
+            <a href="/" class="clear-btn">View All Products</a>
+            {% endif %}
+        </div>
         {% endif %}
     </div>
 </body>

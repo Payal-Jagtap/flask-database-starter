@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Product</title>
+    <title>Edit Product</title>
     <style>
         * {
             margin: 0;
@@ -27,13 +27,19 @@
         }
         h1 {
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
             font-size: 2em;
             text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+        .product-id {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 14px;
         }
         .form-group {
             margin-bottom: 25px;
@@ -58,11 +64,8 @@
         }
         input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-        input::placeholder {
-            color: #bbb;
+            border-color: #ffc107;
+            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
         }
         .button-group {
             display: flex;
@@ -72,8 +75,8 @@
         button {
             flex: 1;
             padding: 15px 30px;
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #333;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -85,7 +88,7 @@
         }
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
         }
         button:active {
             transform: translateY(0);
@@ -111,7 +114,7 @@
         .icon {
             margin-right: 8px;
         }
-        .input-hint {
+        .current-value {
             font-size: 12px;
             color: #888;
             margin-top: 5px;
@@ -120,33 +123,31 @@
 </head>
 <body>
     <div class="container">
-        <h1><span class="icon">📦</span>Add New Product</h1>
+        <h1><span class="icon">✏️</span>Edit Product</h1>
+        <div class="product-id">Product ID: #{{ product.id }}</div>
 
         <form method="POST">
             <div class="form-group">
                 <label for="name">Product Name</label>
                 <input type="text" id="name" name="name" required 
-                       placeholder="e.g., Wireless Mouse" autofocus>
-                <div class="input-hint">Enter a descriptive name for your product</div>
+                       value="{{ product.name }}" autofocus>
             </div>
 
             <div class="form-group">
                 <label for="quantity">Quantity in Stock</label>
                 <input type="number" id="quantity" name="quantity" required min="0" 
-                       placeholder="e.g., 100">
-                <div class="input-hint">How many units do you have?</div>
+                       value="{{ product.quantity }}">
             </div>
 
             <div class="form-group">
                 <label for="price">Price per Unit ($)</label>
                 <input type="number" id="price" name="price" step="0.01" required min="0" 
-                       placeholder="e.g., 29.99">
-                <div class="input-hint">Enter the price in dollars (e.g., 19.99)</div>
+                       value="{{ product.price }}">
             </div>
 
             <div class="button-group">
-                <button type="submit">✓ Add Product</button>
-                <a href="/" class="back-link">← Back</a>
+                <button type="submit">💾 Save Changes</button>
+                <a href="/" class="back-link">← Cancel</a>
             </div>
         </form>
     </div>
