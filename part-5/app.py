@@ -44,12 +44,9 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 }
 
 db = SQLAlchemy(app)
-
-
 # =============================================================================
 # MODEL
 # =============================================================================
-
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
@@ -194,7 +191,6 @@ if __name__ == '__main__':
 #   Then load with python-dotenv (already done in this file)
 #
 # =============================================================================
-
 
 # =============================================================================
 # EXERCISE:
