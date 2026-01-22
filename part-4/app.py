@@ -387,6 +387,27 @@ def get_books_sorted():
         'books': [book.to_dict() for book in books]
     })
 
+# GET /api/books/search - Search books by title and/or author name
+@app.route('/api/books/search', methods=['GET'])
+def search_books():
+    q = request.args.get('q', '').strip()
+    author = request.args.get('author', '').strip()
+
+    query = Book.query.join(Author)
+
+    if q:
+        query = query.filter(Book.title.ilike(f"%{q}%"))
+
+    if author:
+        query = query.filter(Author.name.ilike(f"%{author}%"))
+
+    books = query.all()
+
+    return jsonify({
+        'success': True,
+        'count': len(books),
+        'books': [book.to_dict() for book in books]
+    }), 200
 
 # =============================================================================
 # WEB PAGES

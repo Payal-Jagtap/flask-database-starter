@@ -50,14 +50,10 @@ curl http://localhost:5000/api/books
 curl http://localhost:5000/api/books/1
 
 # Create a book
-curl -X POST http://localhost:5000/api/books \
-  -H "Content-Type: application/json" \
-  -d '{"title": "New Book", "author": "Author Name", "year": 2024}'
+curl -X POST http://localhost:5000/api/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "Author Name", "year": 2024}'
 
 # Update a book
-curl -X PUT http://localhost:5000/api/books/1 \
-  -H "Content-Type: application/json" \
-  -d '{"year": 2025}'
+curl -X PUT http://localhost:5000/api/books/1 -H "Content-Type: application/json" -d '{"year": 2025}'
 
 # Delete a book
 curl -X DELETE http://localhost:5000/api/books/1
